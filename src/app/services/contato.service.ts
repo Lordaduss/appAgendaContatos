@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Contato } from '../class/contato';
+import { Contato } from '../models/contato';
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +7,10 @@ import { Contato } from '../class/contato';
 export class ContatoService {
   private _contatos: Contato[] = []
 
-  constructor() { }
+  constructor() {
+    let contato = new Contato("Teste",123,"2022-08-10","masculino")
+    this.inserir(contato)
+   }
 
   public get contatos(): Contato[]{
     return this._contatos
@@ -15,5 +18,28 @@ export class ContatoService {
 
   public inserir(contato: Contato): void{
     this._contatos.push(contato)
+  }
+
+  public editar(contato: Contato, nome: string, telefone: number, sexo: string, dataNasc: string): boolean{
+    for(let i=0;i<this._contatos.length;i++){
+      if((this._contatos[i].id) == (contato.id)){
+        this._contatos[i].nome = nome
+        this._contatos[i].telefone = telefone
+        this._contatos[i].sexo = sexo
+        this._contatos[i].dataNasc = dataNasc
+        return true
+      }
+    }
+    return false
+  }
+
+  public excluir(contato: Contato): boolean{
+    for(let i=0;i<this._contatos.length;i++){
+      if((this._contatos[i].id) == contato.id){
+        this._contatos.splice(i,1)
+        return true
+      }
+    }
+    return false
   }
 }
