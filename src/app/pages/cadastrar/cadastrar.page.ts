@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { Contato } from '../../models/contato';
@@ -10,37 +11,43 @@ import { ContatoService } from '../../services/contato.service';
   styleUrls: ['./cadastrar.page.scss'],
 })
 export class CadastrarPage implements OnInit {
-  nome: string;
-  telefone: number;
-  dataNasc: string;
-  sexo: string;
-  editar: boolean;
+  form_cadastrar: FormGroup
+  isSubmitted: boolean = false
 
-  constructor(private alertController: AlertController, private router: Router,
-    private contatoService: ContatoService) { }
+  constructor(
+    private alertController: AlertController, 
+    private router: Router,
+    private contatoService: ContatoService, 
+    private formBuilder: FormBuilder) { }
 
   ngOnInit() {
+    this.form_cadastrar=this.formBuilder.group({
+      nome:["",[Validators.required]],
+      telefone:["",[Validators.required, Validators.minLength(10)]],
+      sexo:["",[Validators.required]],
+      dataNasc:["",[Validators.required]]
+    })
+  }
+
+  get errorControl(){
+    return this.form_cadastrar.controls
+  }
+
+  submitForm(): boolean{
+    this.isSubmitted = true
+    if(!this.form_cadastrar.valid){
+      this.presentAlert("Agenda","Erro","Preencha todos os campos!")
+      return false
+    }else{
+      this.cadastrar()
+    }
   }
 
   
-  cadastrar(): void{
-    if((this.validar(this.nome)) && (this.validar(this.telefone))
-    && (this.validar(this.dataNasc)) && (this.validar(this.sexo))){
-      let contato = new Contato(this.nome, this.telefone, this.dataNasc, this.sexo)
-      this.contatoService.inserir(contato)
+  private cadastrar(): void{
+    this.contatoService.inserir(this.form_cadastrar.value)
       this.presentAlert("Agenda","Sucesso","Cadastro Realizado")
       this.router.navigate(["/home"])
-    }else{
-      this.presentAlert("Agenda","Erro","Preencha todos os campos!")
-    }
-    console.log(this.nome + " " + this.telefone + " " + this.dataNasc + " " + this.sexo)
-  }
-
-  private validar(campo: any): boolean{
-    if (!campo){
-      return false
-    }
-    return true
   }
 
   async presentAlert(cabecalho: string, subcabecalho: string, mensagem: string) {

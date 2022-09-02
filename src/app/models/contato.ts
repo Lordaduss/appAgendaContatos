@@ -6,13 +6,13 @@ export class Contato {
     private _sexo: string
     
 
-    constructor(nome: string, telefone: number, dataNasc: string, sexo: string){
+    constructor(nome: string, telefone: number, sexo: string, dataNasc: string){
         let chave = new Date
         this._id=chave.getTime()
         this._nome=nome
         this._telefone=telefone
-        this._dataNasc = dataNasc.split('T')[0]
         this._sexo=sexo
+        this._dataNasc = dataNasc.split('T')[0]
     }
 
     public get id(): any{

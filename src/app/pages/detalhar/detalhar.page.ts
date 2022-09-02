@@ -27,6 +27,8 @@ export class DetalharPage implements OnInit {
     this.telefone = this.contato.telefone
     this.sexo = this.contato.sexo
     this.dataNasc = this.contato.dataNasc
+
+    //nome:[this.contato.nome,[Validators.required]],
   }
 
   alterarEdicao(): void{
