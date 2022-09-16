@@ -11,53 +11,58 @@ import { ContatoService } from '../../services/contato.service';
   styleUrls: ['./cadastrar.page.scss'],
 })
 export class CadastrarPage implements OnInit {
-  form_cadastrar: FormGroup
-  isSubmitted: boolean = false
+  data: string;
+  form_cadastrar: FormGroup;
+  isSubmitted: boolean = false;
 
-  constructor(
-    private alertController: AlertController, 
+  constructor(private alertController: AlertController,
     private router: Router,
-    private contatoService: ContatoService, 
+    private contatoService: ContatoService,
     private formBuilder: FormBuilder) { }
 
   ngOnInit() {
-    this.form_cadastrar=this.formBuilder.group({
-      nome:["",[Validators.required]],
-      telefone:["",[Validators.required, Validators.minLength(10)]],
-      sexo:["",[Validators.required]],
-      dataNasc:["",[Validators.required]]
-    })
+    this.data = new Date().toISOString();
+    this.form_cadastrar = this.formBuilder.group({
+      nome: ["", [Validators.required]],
+      telefone: ["", [Validators.required, Validators.minLength(10)]],
+      genero: ["", [Validators.required]],
+      data_nascimento: ["", [Validators.required]]
+    });
   }
 
   get errorControl(){
-    return this.form_cadastrar.controls
+    return this.form_cadastrar.controls;
   }
 
   submitForm(): boolean{
-    this.isSubmitted = true
+    this.isSubmitted = true;
     if(!this.form_cadastrar.valid){
-      this.presentAlert("Agenda","Erro","Preencha todos os campos!")
-      return false
+      this.presentAlert("Agenda", "Erro",
+       "Todos os campos são Obrigatórios!");
+      return false;
     }else{
-      this.cadastrar()
+      this.cadastrar();
     }
   }
 
-  
-  private cadastrar(): void{
-    this.contatoService.inserir(this.form_cadastrar.value)
-      this.presentAlert("Agenda","Sucesso","Cadastro Realizado")
-      this.router.navigate(["/home"])
+  private cadastrar(){
+    this.contatoService.inserir(this.form_cadastrar.value);
+    this.presentAlert("Agenda", "Sucesso", "Cliente Cadastrado!");
+    this.router.navigate(["/home"]);
   }
 
-  async presentAlert(cabecalho: string, subcabecalho: string, mensagem: string) {
+
+  async presentAlert(header: string, subHeader: string,
+    message: string) {
     const alert = await this.alertController.create({
-      header: cabecalho,
-      subHeader: subcabecalho,
-      message: mensagem,
+      header: header,
+      subHeader: subHeader,
+      message: message,
       buttons: ['OK'],
     });
 
     await alert.present();
   }
+
+
 }

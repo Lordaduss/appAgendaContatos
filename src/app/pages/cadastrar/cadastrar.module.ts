@@ -12,9 +12,9 @@ import { BrMaskerModule } from 'br-mask';
 @NgModule({
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     BrMaskerModule,
-    FormsModule,
     IonicModule,
     CadastrarPageRoutingModule
   ],

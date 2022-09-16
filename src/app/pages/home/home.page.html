@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header >
   <ion-toolbar>
     <ion-title>
       Agenda de Contatos
@@ -6,15 +6,9 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-    <!-- fab placed to the bottom end -->
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="irParaCadastrar()">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-  <ion-list>
+<ion-content >
 
+  <ion-list>
     <ion-item-sliding *ngFor="let contato of contatos">
       <ion-item>
         <ion-label>{{contato.nome}}</ion-label>
@@ -26,5 +20,11 @@
       </ion-item-options>
     </ion-item-sliding>
   </ion-list>
-  
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="secondary" (click)="irParaCadastrar()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
 </ion-content>
