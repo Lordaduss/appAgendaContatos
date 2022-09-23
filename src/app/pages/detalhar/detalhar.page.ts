@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { TouchSequence } from 'selenium-webdriver';
 import { Contato } from 'src/app/models/contato';
+import { ContatoFirebaseService } from 'src/app/services/contato-firebase.service';
 import { ContatoService } from 'src/app/services/contato.service';
 
 @Component({
@@ -20,6 +21,7 @@ export class DetalharPage implements OnInit {
 
   constructor(private router: Router,
     private alertController: AlertController,
+    private contatoFS: ContatoFirebaseService,
     private contatoService: ContatoService,
     private formBuilder: FormBuilder) { }
 
@@ -60,11 +62,13 @@ export class DetalharPage implements OnInit {
   }
 
   editar(){
-    this.contatoService.editar(this.contato, this.form_cadastrar.value['nome'],
-    this.form_cadastrar.value['telefone'], this.form_cadastrar.value['genero'],
-    this.form_cadastrar.value['data_nascimento']);
-    this.presentAlert("Agenda", "Sucesso", "Edição Realizado");
-    this.router.navigate(["/home"]);
+    this.contatoFS.editarContato(this.form_cadastrar.value, this.contato.id).then(()=>{
+      this.presentAlert("Agenda","Sucesso","Edição Realizado");
+      this.router.navigate(["/home"])
+    }).catch((error)=>{
+      this.presentAlert("Agenda","Erro","Erro ao editar contato");
+      console.log(error)
+    })
   }
 
   excluir(): void{
@@ -74,12 +78,13 @@ export class DetalharPage implements OnInit {
   }
 
 excluirContato(){
-    if(this.contatoService.excluir(this.contato)){
-      this.presentAlert("Agenda", "Sucesso", "Cadastro Excluído!");
-      this.router.navigate(["/home"]);
-    }else{
-      this.presentAlert("Agenda", "Erro", "Contato Não Encontrado!");
-    }
+  this.contatoFS.excluirContato(this.contato).then(()=>{
+    this.presentAlert("Agenda","Sucesso","Cadastro Excluido");
+    this.router.navigate(["/home"]);
+  }).catch((error)=>{
+    console.log(error);
+    this.presentAlert("Agenda","Erro","Contato não encontrado")
+  })
   }
 
 //no trabalho deverão estar em outro arquivo

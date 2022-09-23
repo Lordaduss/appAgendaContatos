@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
+import { error } from 'console';
+import { ContatoFirebaseService } from 'src/app/services/contato-firebase.service';
 import { Contato } from '../../models/contato';
 import { ContatoService } from '../../services/contato.service';
 
@@ -14,10 +16,13 @@ export class CadastrarPage implements OnInit {
   data: string;
   form_cadastrar: FormGroup;
   isSubmitted: boolean = false;
+  event: any;
+  imagem: any
 
   constructor(private alertController: AlertController,
+    private loadingCtrl: LoadingController,
     private router: Router,
-    private contatoService: ContatoService,
+    private contatoFS: ContatoFirebaseService,
     private formBuilder: FormBuilder) { }
 
   ngOnInit() {
@@ -26,8 +31,13 @@ export class CadastrarPage implements OnInit {
       nome: ["", [Validators.required]],
       telefone: ["", [Validators.required, Validators.minLength(10)]],
       genero: ["", [Validators.required]],
-      data_nascimento: ["", [Validators.required]]
+      data_nascimento: ["", [Validators.required]],
+      imagem: ["", [Validators.required]]
     });
+  }
+
+  uploadFile(imagem: any){
+    this.imagem = imagem.files
   }
 
   get errorControl(){
@@ -45,11 +55,19 @@ export class CadastrarPage implements OnInit {
     }
   }
 
-  private cadastrar(){
-    this.contatoService.inserir(this.form_cadastrar.value);
-    this.presentAlert("Agenda", "Sucesso", "Cliente Cadastrado!");
-    this.router.navigate(["/home"]);
+  private cadastrar(): void{
+    this.showLoading("Aguarde...",10000)
+    this.contatoFS.inserirContato(this.form_cadastrar.value).then(()=>{
+      this.loadingCtrl.dismiss();
+      this.presentAlert("Agenda","Sucesso","Cadastro Realizado");
+      this.router.navigate(["/home"]);
+    }).catch((error)=>{
+      this.loadingCtrl.dismiss()
+      this.presentAlert("Agenda","Error","Erro ao realizar cadastro")
+      console.log(error)
+    })
   }
+
 
 
   async presentAlert(header: string, subHeader: string,
@@ -64,5 +82,11 @@ export class CadastrarPage implements OnInit {
     await alert.present();
   }
 
-
+  async showLoading(mensagem: string, duracao: number){
+    const loading = await this.loadingCtrl.create({
+      message: mensagem,
+      duration: duracao,
+    });
+    loading.present()
+  }
 }
